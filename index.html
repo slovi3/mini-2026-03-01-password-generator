@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Password Generator</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="wrap">
+      <header class="header">
+        <h1>Password Generator</h1>
+        <p class="muted">90 dk mini proje • Vanilla JS • local</p>
+      </header>
+
+      <section class="card">
+        <div class="row">
+          <label class="label" for="length">Uzunluk</label>
+          <div class="inline">
+            <input id="length" type="range" min="6" max="32" value="16" />
+            <span id="lengthValue" class="pill">16</span>
+          </div>
+        </div>
+
+        <div class="grid">
+          <label class="check">
+            <input id="useLower" type="checkbox" checked />
+            <span>Küçük harf (a-z)</span>
+          </label>
+          <label class="check">
+            <input id="useUpper" type="checkbox" checked />
+            <span>Büyük harf (A-Z)</span>
+          </label>
+          <label class="check">
+            <input id="useNumbers" type="checkbox" checked />
+            <span>Sayı (0-9)</span>
+          </label>
+          <label class="check">
+            <input id="useSymbols" type="checkbox" />
+            <span>Sembol (!@#…)</span>
+          </label>
+        </div>
+
+        <div class="row">
+          <label class="label">Oluşturulan şifre</label>
+
+          <div class="output">
+            <input id="result" type="text" readonly placeholder="Generate’e bas..." />
+            <button id="copyBtn" class="btn ghost" type="button">Kopyala</button>
+          </div>
+
+          <div class="strength">
+            <div class="strengthTop">
+              <span class="muted">Strength</span>
+              <span id="strengthLabel" class="pill">—</span>
+            </div>
+            <div class="barOuter" aria-label="password strength bar">
+              <div id="strengthBar" class="barInner" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <p id="hint" class="hint muted"></p>
+        </div>
+
+        <div class="actions">
+          <button id="generateBtn" class="btn primary" type="button">Generate</button>
+          <button id="shuffleBtn" class="btn" type="button">Yeni üret</button>
+          <button id="clearBtn" class="btn ghost" type="button">Temizle</button>
+        </div>
+
+        <p id="toast" class="toast" role="status" aria-live="polite"></p>
+      </section>
+
+      <footer class="footer muted">
+        <span>Ship kriteri: üret + kopyala + strength gör ✅</span>
+      </footer>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
