@@ -1,3 +1,6 @@
+## Live
+https://slovi3.github.io/mini-2026-03-01-password-generator/
+
 # Password Generator (Vanilla JS)
 
 Mini proje (01.03.2026): Uzunluk ve karakter setine göre şifre üretir, kopyalar ve basit strength metriği gösterir.
