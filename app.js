@@ -75,7 +75,6 @@ function generatePassword() {
   }
 
   password = shuffleString(password).slice(0, length);
-
   result.value = password;
 
   const strength = calculateStrength(password, pools);
@@ -134,30 +133,25 @@ async function copyPassword() {
   const password = result.value.trim();
 
   if (!password) {
-    const oldText = copyBtn.textContent;
-    copyBtn.textContent = "Boş";
-    setTimeout(() => {
-      copyBtn.textContent = oldText;
-    }, 1000);
+    flashCopyButton("Boş", 900);
     return;
   }
 
   try {
     await navigator.clipboard.writeText(password);
-
-    const oldText = copyBtn.textContent;
-    copyBtn.textContent = "Kopyalandı";
-    setTimeout(() => {
-      copyBtn.textContent = oldText;
-    }, 1200);
+    flashCopyButton("Kopyalandı", 1200);
   } catch (error) {
-    const oldText = copyBtn.textContent;
-    copyBtn.textContent = "Hata";
-    setTimeout(() => {
-      copyBtn.textContent = oldText;
-    }, 1200);
+    flashCopyButton("Hata", 1200);
     console.error("Kopyalama hatası:", error);
   }
+}
+
+function flashCopyButton(text, delay) {
+  const oldText = copyBtn.textContent;
+  copyBtn.textContent = text;
+  setTimeout(() => {
+    copyBtn.textContent = oldText;
+  }, delay);
 }
 
 function clearAll() {

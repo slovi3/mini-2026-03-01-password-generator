@@ -22,23 +22,48 @@
   <main class="wrapper">
     <section class="card">
       <div class="card-top-line"></div>
+      <div class="grain"></div>
 
       <div class="top">
         <span class="badge">Mini Project 02</span>
-        <h1>Password Generator Pro</h1>
-        <p class="subtitle">
-          Güçlü, hızlı ve modern bir şifre üretici. Uzunluk, karakter tipleri ve
-          güven seviyesi tek ekranda.
-        </p>
+
+        <div class="title-row">
+          <div class="title-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M7 10V8a5 5 0 0 1 10 0v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <rect x="5" y="10" width="14" height="10" rx="3" stroke="currentColor" stroke-width="1.8"/>
+              <circle cx="12" cy="15" r="1.2" fill="currentColor"/>
+            </svg>
+          </div>
+
+          <div>
+            <h1>Password Generator Pro</h1>
+            <p class="subtitle">
+              Güçlü, hızlı ve modern bir şifre üretici. Uzunluk, karakter tipleri ve
+              güven seviyesi tek ekranda.
+            </p>
+          </div>
+        </div>
       </div>
 
       <div class="output-section">
         <div class="section-head">
-          <span class="section-label">Oluşturulan Şifre</span>
+          <div class="output-label-wrap">
+            <span class="section-label">Oluşturulan Şifre</span>
+            <span class="secure-pill">Secure</span>
+          </div>
+
           <button id="copyBtn" class="copy-btn" type="button">Kopyala</button>
         </div>
 
         <div class="output-box">
+          <span class="input-lock" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M8 10V8.5a4 4 0 1 1 8 0V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <rect x="6" y="10" width="12" height="9" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+            </svg>
+          </span>
+
           <input
             type="text"
             id="result"
