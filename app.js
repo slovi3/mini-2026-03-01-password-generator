@@ -17,6 +17,7 @@ const clearBtn = el("clearBtn");
 
 const strengthBar = el("strengthBar");
 const strengthLabel = el("strengthLabel");
+const strengthPercent = el("strengthPercent");
 const hint = el("hint");
 const toast = el("toast");
 
@@ -25,11 +26,8 @@ const UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const NUMS = "0123456789";
 const SYMS = "!@#$%^&*()-_=+[]{};:,.<>/?~";
 
-function toastMsg(msg) {
-  toast.textContent = msg;
-  toast.classList.add("show");
-  window.clearTimeout(toast._t);
-  toast._t = window.setTimeout(() => toast.classList.remove("show"), 1200);
+function showToast(message) {
+  toast.textContent = message;
 }
 
 function getPool() {
@@ -63,12 +61,12 @@ function shuffleString(str) {
   return arr.join("");
 }
 
-function ensureAtLeastOneFromEachSelected(length, selections) {
+function ensureSelectedTypes(length, selections) {
   const forced = [];
-  for (const s of selections) {
-    if (s.enabled) forced.push(pick(s.chars));
+  for (const item of selections) {
+    if (item.enabled) forced.push(pick(item.chars));
   }
-  return forced.slice(0, Math.min(forced.length, length));
+  return forced.slice(0, Math.min(length, forced.length));
 }
 
 function generatePassword() {
@@ -76,11 +74,10 @@ function generatePassword() {
   const pool = getPool();
 
   if (!pool) {
-    hint.textContent = "En az 1 seçenek seç (küçük/büyük/sayı/sembol).";
+    hint.textContent = "En az 1 karakter tipi seçmelisin.";
+    showToast("Önce en az 1 seçenek seç.");
     return "";
   }
-
-  hint.textContent = "";
 
   const selections = [
     { enabled: useLower.checked, chars: LOWER },
@@ -89,25 +86,30 @@ function generatePassword() {
     { enabled: useSymbols.checked, chars: SYMS },
   ];
 
-  let out = ensureAtLeastOneFromEachSelected(length, selections).join("");
-  while (out.length < length) out += pick(pool);
-  out = shuffleString(out);
+  let password = ensureSelectedTypes(length, selections).join("");
 
-  return out;
+  while (password.length < length) {
+    password += pick(pool);
+  }
+
+  return shuffleString(password);
 }
 
-function estimateStrength(pw) {
-  if (!pw) return { score: 0, label: "—", percent: 0, tip: "" };
+function estimateStrength(password) {
+  if (!password) {
+    return { score: 0, label: "—", tip: "" };
+  }
 
-  const length = pw.length;
-  const hasLower = /[a-z]/.test(pw);
-  const hasUpper = /[A-Z]/.test(pw);
-  const hasNum = /[0-9]/.test(pw);
-  const hasSym = /[^a-zA-Z0-9]/.test(pw);
+  const length = password.length;
+  const hasLower = /[a-z]/.test(password);
+  const hasUpper = /[A-Z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSymbol = /[^a-zA-Z0-9]/.test(password);
 
-  const variety = [hasLower, hasUpper, hasNum, hasSym].filter(Boolean).length;
+  const variety = [hasLower, hasUpper, hasNumber, hasSymbol].filter(Boolean).length;
 
   let score = 0;
+
   if (length >= 6) score += 10;
   if (length >= 10) score += 15;
   if (length >= 14) score += 20;
@@ -115,68 +117,80 @@ function estimateStrength(pw) {
 
   score += variety * 12;
 
-  const repeats = pw.split("").filter((c, i, a) => a.indexOf(c) !== i).length;
+  const repeats = password.split("").filter((char, index, arr) => arr.indexOf(char) !== index).length;
   if (repeats > length / 2) score -= 10;
 
   score = Math.max(0, Math.min(100, score));
 
   let label = "Weak";
-  if (score >= 75) label = "Strong";
-  else if (score >= 50) label = "Good";
-  else if (score >= 30) label = "Okay";
+  let tip = "Uzunluğu artır ve daha fazla karakter türü ekle.";
 
-  const percent = score;
+  if (score >= 75) {
+    label = "Strong";
+    tip = "Güçlü görünüyor. Uzun ve dengeli bir kombinasyon.";
+  } else if (score >= 50) {
+    label = "Good";
+    tip = "Gayet iyi. Biraz daha uzun yaparsan daha da güçlenir.";
+  } else if (score >= 30) {
+    label = "Okay";
+    tip = "Fena değil ama sembol ve uzunluk eklemek iyi olur.";
+  }
 
-  let tip = "";
-  if (score < 30) tip = "Uzunluğu artır + en az 3 karakter türü kullan.";
-  else if (score < 50) tip = "Bir karakter türü daha ekle (örn. sembol) veya uzunluğu 14+ yap.";
-  else if (score < 75) tip = "Gayet iyi. 16+ ve sembol ile daha da güçlenir.";
-  else tip = "İyi. Bu şifre güçlü görünüyor.";
-
-  return { score, label, percent, tip };
+  return { score, label, tip };
 }
 
-function renderStrength(pw) {
-  const s = estimateStrength(pw);
-  strengthLabel.textContent = s.label;
-  strengthBar.style.width = `${s.percent}%`;
-  hint.textContent = s.tip || "";
+function renderStrength(password) {
+  const strength = estimateStrength(password);
+
+  strengthLabel.textContent = strength.label;
+  strengthPercent.textContent = `${strength.score}%`;
+  strengthBar.style.width = `${strength.score}%`;
+  hint.textContent = strength.tip;
+}
+
+function handleGenerate() {
+  const password = generatePassword();
+  result.value = password;
+  renderStrength(password);
+
+  if (password) {
+    showToast("Yeni şifre üretildi.");
+  }
 }
 
 lengthInput.addEventListener("input", () => {
   lengthValue.textContent = lengthInput.value;
-  if (result.value) renderStrength(result.value);
 });
 
-function doGenerate() {
-  const pw = generatePassword();
-  result.value = pw;
-  renderStrength(pw);
-  if (pw) toastMsg("Şifre üretildi.");
-}
-
-generateBtn.addEventListener("click", doGenerate);
-shuffleBtn.addEventListener("click", doGenerate);
+generateBtn.addEventListener("click", handleGenerate);
+shuffleBtn.addEventListener("click", handleGenerate);
 
 clearBtn.addEventListener("click", () => {
   result.value = "";
-  strengthLabel.textContent = "—";
   strengthBar.style.width = "0%";
+  strengthLabel.textContent = "—";
+  strengthPercent.textContent = "0%";
   hint.textContent = "";
-  toastMsg("Temizlendi.");
+  showToast("Alan temizlendi.");
 });
 
 copyBtn.addEventListener("click", async () => {
-  const pw = result.value;
-  if (!pw) return toastMsg("Önce şifre üret.");
+  if (!result.value) {
+    showToast("Önce şifre üret.");
+    return;
+  }
 
   try {
-    await navigator.clipboard.writeText(pw);
-    toastMsg("Kopyalandı ✅");
+    await navigator.clipboard.writeText(result.value);
+    showToast("Şifre kopyalandı ✅");
+    copyBtn.textContent = "Kopyalandı";
+    setTimeout(() => {
+      copyBtn.textContent = "Kopyala";
+    }, 1000);
   } catch {
     result.select();
     document.execCommand("copy");
-    toastMsg("Kopyalandı ✅");
+    showToast("Şifre kopyalandı ✅");
   }
 });
 

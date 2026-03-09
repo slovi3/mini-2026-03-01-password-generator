@@ -1,17 +1,12 @@
+# Password Generator Pro (Vanilla JS)
+
+Modern UI ile tasarlanmış şifre üretici uygulaması. Uzunluk, karakter türleri ve strength analizi sunar.
+
+## Features
+- Password generate
+- Copy to clipboard
+- Strength score + label
+- Responsive modern UI
+
 ## Live
 https://slovi3.github.io/mini-2026-03-01-password-generator/
-
-# Password Generator (Vanilla JS)
-
-Mini proje (01.03.2026): Uzunluk ve karakter setine göre şifre üretir, kopyalar ve basit strength metriği gösterir.
-
-## Ship Kriteri
-- [x] Şifre üret
-- [x] Kopyala butonu
-- [x] Strength bar + label
-
-## Çalıştırma
-`index.html` dosyasını çift tıkla ve tarayıcıda aç.
-
-## Not
-Strength hesaplaması basit bir heuristik kullanır (demo amaçlı).
