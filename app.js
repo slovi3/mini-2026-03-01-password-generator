@@ -14,6 +14,8 @@ const clearBtn = document.getElementById("clearBtn");
 
 const strengthBar = document.getElementById("strengthBar");
 const strengthText = document.getElementById("strengthText");
+const strengthLabel = document.getElementById("strengthLabel");
+const strengthHint = document.getElementById("strengthHint");
 
 const LOWER = "abcdefghijklmnopqrstuvwxyz";
 const UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -57,45 +59,39 @@ function generatePassword() {
   if (pools.length === 0) {
     result.value = "";
     updateStrength(0);
-    strengthText.textContent = "Seçim yap";
     return;
   }
 
   let password = "";
 
-  // Her seçili gruptan en az 1 karakter ekle
   for (const pool of pools) {
     password += getRandomChar(pool);
   }
 
-  // Tüm havuzları birleştir
   const allChars = pools.join("");
 
-  // Kalan karakterleri doldur
   while (password.length < length) {
     password += getRandomChar(allChars);
   }
 
-  // Karakter sırasını karıştır
-  password = shuffleString(password);
+  password = shuffleString(password).slice(0, length);
 
   result.value = password;
-  updateStrength(calculateStrength(password, pools));
+
+  const strength = calculateStrength(password, pools);
+  updateStrength(strength);
 }
 
 function calculateStrength(password, pools) {
   let score = 0;
 
-  // Uzunluk puanı
   if (password.length >= 8) score += 20;
   if (password.length >= 12) score += 20;
   if (password.length >= 16) score += 20;
   if (password.length >= 24) score += 10;
 
-  // Karakter çeşitliliği puanı
   score += pools.length * 10;
 
-  // Bonus kontrol
   if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score += 5;
   if (/\d/.test(password)) score += 5;
   if (/[^A-Za-z0-9]/.test(password)) score += 10;
@@ -109,20 +105,28 @@ function updateStrength(strength) {
   strengthBar.style.width = `${strength}%`;
 
   if (strength === 0) {
+    strengthLabel.textContent = "Başlangıç";
     strengthText.textContent = "0%";
-    strengthBar.style.filter = "none";
+    strengthHint.textContent = "Daha güçlü şifre için uzunluğu ve karakter çeşitliliğini artır.";
+    strengthBar.style.background = "linear-gradient(90deg, #2f3136, #454b57)";
     return;
   }
 
   if (strength < 40) {
-    strengthText.textContent = `Zayıf ${strength}%`;
-    strengthBar.style.filter = "none";
+    strengthLabel.textContent = "Zayıf";
+    strengthText.textContent = `${strength}%`;
+    strengthHint.textContent = "Şifre zayıf. Uzunluğu artır ve daha fazla karakter türü seç.";
+    strengthBar.style.background = "linear-gradient(90deg, #ff4d6d, #ff7b54)";
   } else if (strength < 70) {
-    strengthText.textContent = `Orta ${strength}%`;
-    strengthBar.style.filter = "brightness(1.02)";
+    strengthLabel.textContent = "Orta";
+    strengthText.textContent = `${strength}%`;
+    strengthHint.textContent = "Fena değil. Biraz daha uzun yaparsan daha güvenli olur.";
+    strengthBar.style.background = "linear-gradient(90deg, #ffd166, #ffb703)";
   } else {
-    strengthText.textContent = `Güçlü ${strength}%`;
-    strengthBar.style.filter = "brightness(1.08)";
+    strengthLabel.textContent = "Güçlü";
+    strengthText.textContent = `${strength}%`;
+    strengthHint.textContent = "Gayet iyi. Bu şifre güçlü görünüyor.";
+    strengthBar.style.background = "linear-gradient(90deg, #7ee787, #2dd4bf)";
   }
 }
 
@@ -159,7 +163,6 @@ async function copyPassword() {
 function clearAll() {
   result.value = "";
   updateStrength(0);
-  strengthText.textContent = "0%";
 }
 
 function ensureAtLeastOneOption(event) {
@@ -186,7 +189,5 @@ shuffleBtn.addEventListener("click", generatePassword);
 copyBtn.addEventListener("click", copyPassword);
 clearBtn.addEventListener("click", clearAll);
 
-// İlk yükleme
 updateLengthUI();
 updateStrength(0);
-strengthText.textContent = "0%";

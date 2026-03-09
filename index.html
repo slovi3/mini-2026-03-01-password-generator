@@ -3,102 +3,131 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Şifre Oluşturucu</title>
+  <title>Password Generator Pro</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
   />
+
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="bg"></div>
+  <div class="bg-grid"></div>
+  <div class="bg-glow glow-1"></div>
+  <div class="bg-glow glow-2"></div>
 
   <main class="wrapper">
     <section class="card">
+      <div class="card-top-line"></div>
+
       <div class="top">
         <span class="badge">Mini Project 02</span>
-        <h1>Şifre Oluşturucu</h1>
-        <p>
+        <h1>Password Generator Pro</h1>
+        <p class="subtitle">
           Güçlü, hızlı ve modern bir şifre üretici. Uzunluk, karakter tipleri ve
           güven seviyesi tek ekranda.
         </p>
       </div>
 
       <div class="output-section">
-        <label class="section-label">Oluşturulan Şifre</label>
+        <div class="section-head">
+          <span class="section-label">Oluşturulan Şifre</span>
+          <button id="copyBtn" class="copy-btn" type="button">Kopyala</button>
+        </div>
+
         <div class="output-box">
           <input
             type="text"
             id="result"
             readonly
-            placeholder="Şifre oluşturmak için butona bas..."
+            placeholder="Şifre oluşturmak için Generate butonuna bas..."
           />
-          <button id="copyBtn" class="icon-btn" type="button">Kopyala</button>
         </div>
       </div>
 
-      <div class="range-section">
+      <div class="range-section panel">
         <div class="range-top">
-          <label class="section-label">Uzunluk</label>
+          <span class="section-label">Uzunluk</span>
           <span id="lengthValue" class="length-value">16</span>
         </div>
+
         <input type="range" id="length" min="6" max="32" value="16" />
+
+        <div class="range-labels">
+          <span>6</span>
+          <span>32</span>
+        </div>
       </div>
 
       <div class="options-grid">
-        <label class="option">
+        <label class="option-card">
           <input type="checkbox" id="useLower" checked />
           <span class="checkmark"></span>
-          <div>
+          <div class="option-text">
             <strong>Küçük Harf</strong>
-            <small>a-z karakterleri</small>
+            <small>a-z karakterleri dahil et</small>
           </div>
         </label>
 
-        <label class="option">
+        <label class="option-card">
           <input type="checkbox" id="useUpper" checked />
           <span class="checkmark"></span>
-          <div>
+          <div class="option-text">
             <strong>Büyük Harf</strong>
-            <small>A-Z karakterleri</small>
+            <small>A-Z karakterleri dahil et</small>
           </div>
         </label>
 
-        <label class="option">
+        <label class="option-card">
           <input type="checkbox" id="useNumbers" checked />
           <span class="checkmark"></span>
-          <div>
+          <div class="option-text">
             <strong>Sayılar</strong>
-            <small>0-9 karakterleri</small>
+            <small>0-9 karakterleri dahil et</small>
           </div>
         </label>
 
-        <label class="option">
+        <label class="option-card">
           <input type="checkbox" id="useSymbols" checked />
           <span class="checkmark"></span>
-          <div>
+          <div class="option-text">
             <strong>Semboller</strong>
             <small>!@#$% gibi özel karakterler</small>
           </div>
         </label>
       </div>
 
-      <div class="strength-section">
+      <div class="strength-section panel">
         <div class="strength-top">
           <span class="section-label">Strength</span>
-          <span id="strengthText" class="strength-text">0%</span>
+          <div class="strength-meta">
+            <strong id="strengthLabel">Başlangıç</strong>
+            <span id="strengthText">0%</span>
+          </div>
         </div>
+
         <div class="strength-track">
           <div id="strengthBar" class="strength-bar"></div>
         </div>
+
+        <p id="strengthHint" class="strength-hint">
+          Daha güçlü şifre için uzunluğu ve karakter çeşitliliğini artır.
+        </p>
       </div>
 
       <div class="actions">
-        <button id="generateBtn" class="btn primary" type="button">Generate</button>
-        <button id="shuffleBtn" class="btn secondary" type="button">Yeni Üret</button>
-        <button id="clearBtn" class="btn danger" type="button">Temizle</button>
+        <button id="generateBtn" class="btn btn-primary" type="button">
+          Generate
+        </button>
+        <button id="shuffleBtn" class="btn btn-secondary" type="button">
+          Yeni Üret
+        </button>
+        <button id="clearBtn" class="btn btn-dark" type="button">
+          Temizle
+        </button>
       </div>
     </section>
   </main>
