@@ -28,6 +28,10 @@ const SYMS = "!@#$%^&*()-_=+[]{};:,.<>/?~";
 
 function showToast(message) {
   toast.textContent = message;
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(() => {
+    toast.textContent = "";
+  }, 1800);
 }
 
 function getPool() {
