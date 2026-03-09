@@ -1,201 +1,192 @@
-const el = (id) => document.getElementById(id);
+const result = document.getElementById("result");
+const copyBtn = document.getElementById("copyBtn");
+const lengthInput = document.getElementById("length");
+const lengthValue = document.getElementById("lengthValue");
 
-const lengthInput = el("length");
-const lengthValue = el("lengthValue");
+const useLower = document.getElementById("useLower");
+const useUpper = document.getElementById("useUpper");
+const useNumbers = document.getElementById("useNumbers");
+const useSymbols = document.getElementById("useSymbols");
 
-const useLower = el("useLower");
-const useUpper = el("useUpper");
-const useNumbers = el("useNumbers");
-const useSymbols = el("useSymbols");
+const generateBtn = document.getElementById("generateBtn");
+const shuffleBtn = document.getElementById("shuffleBtn");
+const clearBtn = document.getElementById("clearBtn");
 
-const result = el("result");
-const copyBtn = el("copyBtn");
-
-const generateBtn = el("generateBtn");
-const shuffleBtn = el("shuffleBtn");
-const clearBtn = el("clearBtn");
-
-const strengthBar = el("strengthBar");
-const strengthLabel = el("strengthLabel");
-const strengthPercent = el("strengthPercent");
-const hint = el("hint");
-const toast = el("toast");
+const strengthBar = document.getElementById("strengthBar");
+const strengthText = document.getElementById("strengthText");
 
 const LOWER = "abcdefghijklmnopqrstuvwxyz";
 const UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const NUMS = "0123456789";
-const SYMS = "!@#$%^&*()-_=+[]{};:,.<>/?~";
+const NUMBERS = "0123456789";
+const SYMBOLS = "!@#$%^&*()_+{}[]<>?/|~=-";
 
-function showToast(message) {
-  toast.textContent = message;
-  clearTimeout(showToast._timer);
-  showToast._timer = setTimeout(() => {
-    toast.textContent = "";
-  }, 1800);
+function updateLengthUI() {
+  lengthValue.textContent = lengthInput.value;
 }
 
-function getPool() {
-  let pool = "";
-  if (useLower.checked) pool += LOWER;
-  if (useUpper.checked) pool += UPPER;
-  if (useNumbers.checked) pool += NUMS;
-  if (useSymbols.checked) pool += SYMS;
-  return pool;
+function getSelectedPools() {
+  const pools = [];
+
+  if (useLower.checked) pools.push(LOWER);
+  if (useUpper.checked) pools.push(UPPER);
+  if (useNumbers.checked) pools.push(NUMBERS);
+  if (useSymbols.checked) pools.push(SYMBOLS);
+
+  return pools;
 }
 
-function randInt(maxExclusive) {
-  if (window.crypto && crypto.getRandomValues) {
-    const arr = new Uint32Array(1);
-    crypto.getRandomValues(arr);
-    return arr[0] % maxExclusive;
-  }
-  return Math.floor(Math.random() * maxExclusive);
-}
-
-function pick(pool) {
-  return pool[randInt(pool.length)];
+function getRandomChar(str) {
+  return str[Math.floor(Math.random() * str.length)];
 }
 
 function shuffleString(str) {
   const arr = str.split("");
+
   for (let i = arr.length - 1; i > 0; i--) {
-    const j = randInt(i + 1);
+    const j = Math.floor(Math.random() * (i + 1));
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
-  return arr.join("");
-}
 
-function ensureSelectedTypes(length, selections) {
-  const forced = [];
-  for (const item of selections) {
-    if (item.enabled) forced.push(pick(item.chars));
-  }
-  return forced.slice(0, Math.min(length, forced.length));
+  return arr.join("");
 }
 
 function generatePassword() {
   const length = Number(lengthInput.value);
-  const pool = getPool();
+  const pools = getSelectedPools();
 
-  if (!pool) {
-    hint.textContent = "En az 1 karakter tipi seçmelisin.";
-    showToast("Önce en az 1 seçenek seç.");
-    return "";
+  if (pools.length === 0) {
+    result.value = "";
+    updateStrength(0);
+    strengthText.textContent = "Seçim yap";
+    return;
   }
 
-  const selections = [
-    { enabled: useLower.checked, chars: LOWER },
-    { enabled: useUpper.checked, chars: UPPER },
-    { enabled: useNumbers.checked, chars: NUMS },
-    { enabled: useSymbols.checked, chars: SYMS },
-  ];
+  let password = "";
 
-  let password = ensureSelectedTypes(length, selections).join("");
+  // Her seçili gruptan en az 1 karakter ekle
+  for (const pool of pools) {
+    password += getRandomChar(pool);
+  }
 
+  // Tüm havuzları birleştir
+  const allChars = pools.join("");
+
+  // Kalan karakterleri doldur
   while (password.length < length) {
-    password += pick(pool);
+    password += getRandomChar(allChars);
   }
 
-  return shuffleString(password);
+  // Karakter sırasını karıştır
+  password = shuffleString(password);
+
+  result.value = password;
+  updateStrength(calculateStrength(password, pools));
 }
 
-function estimateStrength(password) {
-  if (!password) {
-    return { score: 0, label: "—", tip: "" };
-  }
-
-  const length = password.length;
-  const hasLower = /[a-z]/.test(password);
-  const hasUpper = /[A-Z]/.test(password);
-  const hasNumber = /[0-9]/.test(password);
-  const hasSymbol = /[^a-zA-Z0-9]/.test(password);
-
-  const variety = [hasLower, hasUpper, hasNumber, hasSymbol].filter(Boolean).length;
-
+function calculateStrength(password, pools) {
   let score = 0;
 
-  if (length >= 6) score += 10;
-  if (length >= 10) score += 15;
-  if (length >= 14) score += 20;
-  if (length >= 18) score += 15;
+  // Uzunluk puanı
+  if (password.length >= 8) score += 20;
+  if (password.length >= 12) score += 20;
+  if (password.length >= 16) score += 20;
+  if (password.length >= 24) score += 10;
 
-  score += variety * 12;
+  // Karakter çeşitliliği puanı
+  score += pools.length * 10;
 
-  const repeats = password.split("").filter((char, index, arr) => arr.indexOf(char) !== index).length;
-  if (repeats > length / 2) score -= 10;
+  // Bonus kontrol
+  if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score += 5;
+  if (/\d/.test(password)) score += 5;
+  if (/[^A-Za-z0-9]/.test(password)) score += 10;
 
-  score = Math.max(0, Math.min(100, score));
+  if (score > 100) score = 100;
 
-  let label = "Weak";
-  let tip = "Uzunluğu artır ve daha fazla karakter türü ekle.";
+  return score;
+}
 
-  if (score >= 75) {
-    label = "Strong";
-    tip = "Güçlü görünüyor. Uzun ve dengeli bir kombinasyon.";
-  } else if (score >= 50) {
-    label = "Good";
-    tip = "Gayet iyi. Biraz daha uzun yaparsan daha da güçlenir.";
-  } else if (score >= 30) {
-    label = "Okay";
-    tip = "Fena değil ama sembol ve uzunluk eklemek iyi olur.";
+function updateStrength(strength) {
+  strengthBar.style.width = `${strength}%`;
+
+  if (strength === 0) {
+    strengthText.textContent = "0%";
+    strengthBar.style.filter = "none";
+    return;
   }
 
-  return { score, label, tip };
-}
-
-function renderStrength(password) {
-  const strength = estimateStrength(password);
-
-  strengthLabel.textContent = strength.label;
-  strengthPercent.textContent = `${strength.score}%`;
-  strengthBar.style.width = `${strength.score}%`;
-  hint.textContent = strength.tip;
-}
-
-function handleGenerate() {
-  const password = generatePassword();
-  result.value = password;
-  renderStrength(password);
-
-  if (password) {
-    showToast("Yeni şifre üretildi.");
+  if (strength < 40) {
+    strengthText.textContent = `Zayıf ${strength}%`;
+    strengthBar.style.filter = "none";
+  } else if (strength < 70) {
+    strengthText.textContent = `Orta ${strength}%`;
+    strengthBar.style.filter = "brightness(1.02)";
+  } else {
+    strengthText.textContent = `Güçlü ${strength}%`;
+    strengthBar.style.filter = "brightness(1.08)";
   }
 }
 
-lengthInput.addEventListener("input", () => {
-  lengthValue.textContent = lengthInput.value;
-});
+async function copyPassword() {
+  const password = result.value.trim();
 
-generateBtn.addEventListener("click", handleGenerate);
-shuffleBtn.addEventListener("click", handleGenerate);
-
-clearBtn.addEventListener("click", () => {
-  result.value = "";
-  strengthBar.style.width = "0%";
-  strengthLabel.textContent = "—";
-  strengthPercent.textContent = "0%";
-  hint.textContent = "";
-  showToast("Alan temizlendi.");
-});
-
-copyBtn.addEventListener("click", async () => {
-  if (!result.value) {
-    showToast("Önce şifre üret.");
+  if (!password) {
+    const oldText = copyBtn.textContent;
+    copyBtn.textContent = "Boş";
+    setTimeout(() => {
+      copyBtn.textContent = oldText;
+    }, 1000);
     return;
   }
 
   try {
-    await navigator.clipboard.writeText(result.value);
-    showToast("Şifre kopyalandı ✅");
+    await navigator.clipboard.writeText(password);
+
+    const oldText = copyBtn.textContent;
     copyBtn.textContent = "Kopyalandı";
     setTimeout(() => {
-      copyBtn.textContent = "Kopyala";
-    }, 1000);
-  } catch {
-    result.select();
-    document.execCommand("copy");
-    showToast("Şifre kopyalandı ✅");
+      copyBtn.textContent = oldText;
+    }, 1200);
+  } catch (error) {
+    const oldText = copyBtn.textContent;
+    copyBtn.textContent = "Hata";
+    setTimeout(() => {
+      copyBtn.textContent = oldText;
+    }, 1200);
+    console.error("Kopyalama hatası:", error);
   }
+}
+
+function clearAll() {
+  result.value = "";
+  updateStrength(0);
+  strengthText.textContent = "0%";
+}
+
+function ensureAtLeastOneOption(event) {
+  const selectedCount = [
+    useLower.checked,
+    useUpper.checked,
+    useNumbers.checked,
+    useSymbols.checked,
+  ].filter(Boolean).length;
+
+  if (selectedCount === 0) {
+    event.target.checked = true;
+  }
+}
+
+lengthInput.addEventListener("input", updateLengthUI);
+
+[useLower, useUpper, useNumbers, useSymbols].forEach((checkbox) => {
+  checkbox.addEventListener("change", ensureAtLeastOneOption);
 });
 
-lengthValue.textContent = lengthInput.value;
+generateBtn.addEventListener("click", generatePassword);
+shuffleBtn.addEventListener("click", generatePassword);
+copyBtn.addEventListener("click", copyPassword);
+clearBtn.addEventListener("click", clearAll);
+
+// İlk yükleme
+updateLengthUI();
+updateStrength(0);
+strengthText.textContent = "0%";

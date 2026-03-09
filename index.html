@@ -3,12 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Password Generator Pro</title>
-  <meta
-    name="description"
-    content="Modern, hızlı ve güçlü şifre üretici uygulaması."
-  />
-
+  <title>Şifre Oluşturucu</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -18,96 +13,71 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="bg-orb orb-1"></div>
-  <div class="bg-orb orb-2"></div>
-  <div class="grid-overlay"></div>
+  <div class="bg"></div>
 
-  <main class="app-shell">
-    <section class="hero-card">
-      <div class="hero-top">
-        <span class="mini-badge">Mini Project 02</span>
-        <span class="mini-badge ghost">Vanilla JS</span>
+  <main class="wrapper">
+    <section class="card">
+      <div class="top">
+        <span class="badge">Mini Project 02</span>
+        <h1>Şifre Oluşturucu</h1>
+        <p>
+          Güçlü, hızlı ve modern bir şifre üretici. Uzunluk, karakter tipleri ve
+          güven seviyesi tek ekranda.
+        </p>
       </div>
 
-      <h1>Password Generator Pro</h1>
-      <p class="hero-text">
-        Güçlü, hızlı ve modern bir şifre üretici. Uzunluk, karakter türleri ve
-        strength analizi tek ekranda.
-      </p>
-
-      <div class="hero-stats">
-        <div class="stat-box">
-          <span class="stat-label">Security</span>
-          <strong>Smart Score</strong>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">Copy</span>
-          <strong>One Click</strong>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">UI</span>
-          <strong>Premium Dark</strong>
-        </div>
-      </div>
-    </section>
-
-    <section class="generator-card">
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">Generator</p>
-          <h2>Şifre Oluştur</h2>
-        </div>
-        <div class="length-chip">
-          <span>Uzunluk</span>
-          <strong id="lengthValue">16</strong>
+      <div class="output-section">
+        <label class="section-label">Oluşturulan Şifre</label>
+        <div class="output-box">
+          <input
+            type="text"
+            id="result"
+            readonly
+            placeholder="Şifre oluşturmak için butona bas..."
+          />
+          <button id="copyBtn" class="icon-btn" type="button">Kopyala</button>
         </div>
       </div>
 
-      <div class="range-wrap">
-        <input
-          type="range"
-          id="length"
-          min="6"
-          max="32"
-          value="16"
-        />
-        <div class="range-labels">
-          <span>6</span>
-          <span>32</span>
+      <div class="range-section">
+        <div class="range-top">
+          <label class="section-label">Uzunluk</label>
+          <span id="lengthValue" class="length-value">16</span>
         </div>
+        <input type="range" id="length" min="6" max="32" value="16" />
       </div>
 
       <div class="options-grid">
-        <label class="option-card">
+        <label class="option">
           <input type="checkbox" id="useLower" checked />
-          <span class="custom-check"></span>
+          <span class="checkmark"></span>
           <div>
             <strong>Küçük Harf</strong>
-            <small>a-z karakterleri dahil et</small>
+            <small>a-z karakterleri</small>
           </div>
         </label>
 
-        <label class="option-card">
+        <label class="option">
           <input type="checkbox" id="useUpper" checked />
-          <span class="custom-check"></span>
+          <span class="checkmark"></span>
           <div>
             <strong>Büyük Harf</strong>
-            <small>A-Z karakterleri dahil et</small>
+            <small>A-Z karakterleri</small>
           </div>
         </label>
 
-        <label class="option-card">
+        <label class="option">
           <input type="checkbox" id="useNumbers" checked />
-          <span class="custom-check"></span>
+          <span class="checkmark"></span>
           <div>
             <strong>Sayılar</strong>
-            <small>0-9 karakterleri dahil et</small>
+            <small>0-9 karakterleri</small>
           </div>
         </label>
 
-        <label class="option-card">
+        <label class="option">
           <input type="checkbox" id="useSymbols" checked />
-          <span class="custom-check"></span>
+          <span class="checkmark"></span>
           <div>
             <strong>Semboller</strong>
             <small>!@#$% gibi özel karakterler</small>
@@ -115,81 +85,23 @@
         </label>
       </div>
 
-      <div class="output-card">
-        <div class="output-head">
-          <span>Generated Password</span>
-          <button id="copyBtn" class="btn btn-glass" type="button">Kopyala</button>
-        </div>
-
-        <input
-          type="text"
-          id="result"
-          readonly
-          placeholder="Oluşturulan şifre burada görünecek"
-        />
-      </div>
-
-      <div class="strength-card">
+      <div class="strength-section">
         <div class="strength-top">
-          <span>Strength</span>
-          <div class="strength-meta">
-            <strong id="strengthLabel">—</strong>
-            <span id="strengthPercent">0%</span>
-          </div>
+          <span class="section-label">Strength</span>
+          <span id="strengthText" class="strength-text">0%</span>
         </div>
-
         <div class="strength-track">
           <div id="strengthBar" class="strength-bar"></div>
         </div>
-
-        <p id="hint" class="hint-text"></p>
       </div>
 
       <div class="actions">
-        <button id="generateBtn" class="btn btn-primary" type="button">
-          Generate
-        </button>
-        <button id="shuffleBtn" class="btn btn-secondary" type="button">
-          Yeni Üret
-        </button>
-        <button id="clearBtn" class="btn btn-danger" type="button">
-          Temizle
-        </button>
+        <button id="generateBtn" class="btn primary" type="button">Generate</button>
+        <button id="shuffleBtn" class="btn secondary" type="button">Yeni Üret</button>
+        <button id="clearBtn" class="btn danger" type="button">Temizle</button>
       </div>
     </section>
-
-    <aside class="info-card">
-      <p class="eyebrow">Quick Info</p>
-      <h3>Neden iyi bir şifre önemli?</h3>
-
-      <div class="tips">
-        <div class="tip-item">
-          <span>01</span>
-          <p>Uzunluk arttıkça tahmin edilmesi zorlaşır.</p>
-        </div>
-        <div class="tip-item">
-          <span>02</span>
-          <p>Farklı karakter tipleri daha güçlü kombinasyon oluşturur.</p>
-        </div>
-        <div class="tip-item">
-          <span>03</span>
-          <p>Aynı şifreyi her yerde kullanmamak güvenliği artırır.</p>
-        </div>
-      </div>
-
-      <div class="checklist">
-        <p class="checklist-title">Ship Checklist</p>
-        <ul>
-          <li>Şifre üretimi çalışıyor</li>
-          <li>Kopyalama çalışıyor</li>
-          <li>Strength bar güncelleniyor</li>
-          <li>Modern görünüm tamam</li>
-        </ul>
-      </div>
-    </aside>
   </main>
-
-  <div id="toast" class="toast" aria-live="polite"></div>
 
   <script src="app.js"></script>
 </body>
