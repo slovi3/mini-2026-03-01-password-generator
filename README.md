@@ -9,4 +9,4 @@ Modern UI ile tasarlanmış şifre üretici uygulaması. Uzunluk, karakter türl
 - Responsive modern UI
 
 ## Live
-https://slovi3.github.io/mini-2026-03-01-password-generator/
+https://slovi3.github.io/password-generator/
